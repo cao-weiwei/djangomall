@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+
+<div class="container">
+  <form action="" method="get">
+    {{ order_filter.form.as_p }}
+    <input type="submit" />
+  </form>
+
+{% for order in orders %}
+  <div>
+    {{ order.id }} {{ order.get_status_display }}
+    <form method="post" action="{% url 'orders:update' order.id %}">
+      {% csrf_token %}
+      <button type="submit">{% trans "Cancel" %}</button>
+    </form>
+  </div>
+  <dl>
+    <dt>{% trans "Shipping Address" %}</dt>
+    <dd>{{ order.shipping_address }} </dd>
+    <dt>{% trans "Time" %}</dt>
+    <dd>{{ order.created_at }}</dd>
+    <dt>{% trans "Total" %}</dt>
+    <dd>{{ order.total }}</dd>
+  </dl>
+
+  <table class="table">
+    <thead>
+      <tr><th>{% trans "Product Name" %}</th><th>{% trans "Quantity" %}</th><th>{% trans "Total" %}</th><th>{% trans "Status" %}</th></tr>
+    </thead>
+    <tbody>
+      {% for line in order.lines.all %}
+        <tr>
+          <td>{{ line.product_name }} {{ line.product_sku }}</td>
+          <td>{{ line.quantity }}</td>
+          <td>{{ line.get_total }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <hr />
+{% endfor %}
+
+</div>
+
+{% endblock %}
